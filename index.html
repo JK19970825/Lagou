@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- header -->
+        <header id="header">拉勾网</header>
+        <!-- content-->
+        <component :is="getCurrent"></component>
+        <!-- footer -->
+        <footer>
+            <div class="footer-tab-custom " :class="{selected:currentIndex === index}" @click="handleClick(tab.id),liClick(index)" v-for="(tab,index) in tabs">
+                <span class="icon selected"></span>
+                <span class="text">{{tab.txt}}</span>
+            </div>
+            <!-- <div class="footer-tab-search">
+                <span class="icon"></span>
+                <span class="text">搜索</span>
+            </div>
+            <div class="footer-tab-mine">
+                <span class="icon"></span>
+                <span class="text">我的</span>
+            </div> -->
+        </footer>
+        <!-- <div>
+            <button @click="handleClick(tab.id)" v-for="tab in tabs">{{tab.txt}}</button>
+        </div> -->
+    </div>
+    <script>
+        Vue.component('tab-custom',{
+            data(){
+                return {
+                    datalist : [],
+                    a : 6
+                }
+            },
+            created(){
+                fetch('./data.json').then((res)=>res.json()).then((res)=>{
+                    // console.log(res);
+                    this.datalist=res.data;
+                })
+            },
+            methods :{
+                loadMore:function(){
+                    this.a+=6;
+                }
+            },
+            template:`
+            <div id="content">
+                <div class="custom-info">
+                    <span class="info">
+                        10秒钟定制职位
+                    </span>
+                    <a href="javascript:;" class="go">
+                        <em class="text">去登录</em>
+                    </a>
+                </div>
+                <ul class="list" v-for="item in datalist.slice(0,a)">
+                    <li class="list-item">
+                        <img class="item-logo" src="https://www.lgstatic.com/i/image2/M01/79/0A/CgoB5ltr2A-AM5SFAADbT9jQCn841.jpeg" alt="">
+                        <div class="item-desc">
+                            <h2 class="item-title">{{item.companyName}}</h2>
+                            <p class="item-info">
+                                <span class="item-pos">
+                                    {{item.positionName}}
+                                </span>
+                                <span class="item-salary">{{item.salary}}</span>
+                            </p>
+                            <p class="item-time">{{item.createTime}}</p>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list">
+                    <li class="activeable list-more" v-if="a<datalist.length" @click='loadMore'>加载更多</li>
+                    <li class="activeable list-more" v-else>没有更多了</li>
+                </ul>
+                <div id="copyright">
+                    <p>©2020 lagou.com, all right reserved </p>
+                    <div class="copyright-item">
+                        <span class="phone active">移动版&nbsp;·&nbsp;</span>
+                        <span class="computer">电脑版&nbsp;·&nbsp;</span>
+                        <a href="#header">回顶部</a>
+                    </div>
+                </div>
+            </div>
+            `
+        })
+        Vue.component('tab-search',{
+            template:`
+            <div id="content">
+                <div class="linputer">
+                    <div class="lbutton">
+                        <span class="city">全国</span>
+                        <span class="cityicon"></span>
+                    </div>
+                    <div class="rinput">
+                        <input type="text" class="inputer" placeholder="搜索职位或公司">
+                        <span class="search">
+                            <em class="searchicon"></em>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            `
+        })
+        Vue.component('tab-mine',{
+            template:`
+        <div id="content1">
+            <div class="logininfo">
+                <div class="nologin center">
+                    <a href="javascript:;" class="loginbut">登录 / 注册</a>
+                </div>
+            </div>
+            <div class="buttons">
+                <a href="javascript:;" class="button deliver">
+                    <span>投递</span>
+                </a>
+                <a href="javascript:;" class="button interview">面试</a>
+                <a href="javascript:;" class="button invitation">
+                    <span>邀约</span>
+                </a>
+                <a href="javascript:;" class="button collect">收藏</a>
+            </div>
+        </div>
+            `
+        })
+        var vm = new Vue({
+            el : '#app',
+            data : {
+                current:'custom',
+                tabs:[{id:'custom',txt:'职位'},{id:'search',txt:'搜索'},{id:'mine',txt:'我的'}],
+                currentIndex:0
+            },
+            methods : {
+                handleClick(item){
+                    this.current = item;
+                },
+                liClick(index){
+					this.currentIndex = index
+				}
+            },
+            computed : {
+                getCurrent(){
+                    return 'tab-' + this.current;
+                },
+              
+            }
+        })
+    </script>
+</body>
+</html>
